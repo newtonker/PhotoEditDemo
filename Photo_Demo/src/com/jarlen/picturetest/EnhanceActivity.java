@@ -15,163 +15,159 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
-public class EnhanceActivity extends Activity
-		implements
-			OnSeekBarChangeListener,
-			OnClickListener
+public class EnhanceActivity extends Activity implements OnSeekBarChangeListener, OnClickListener
 {
 
-	private ImageButton cancelBtn, okBtn;
+    private ImageButton cancelBtn, okBtn;
 
-	private ImageView pictureShow;
+    private ImageView pictureShow;
 
-	private SeekBar saturationSeekBar, brightnessSeekBar, contrastSeekBar;
+    private SeekBar saturationSeekBar, brightnessSeekBar, contrastSeekBar;
 
-	private String imgPath;
-	private Bitmap bitmapSrc;
+    private String imgPath;
+    private Bitmap bitmapSrc;
 
-	private PhotoEnhance pe;
+    private PhotoEnhance pe;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.layout_enhance);
+    @Override
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.layout_enhance);
 
-		Intent intent = getIntent();
+        Intent intent = getIntent();
 
-		imgPath = intent.getStringExtra("camera_path");
-		bitmapSrc = BitmapFactory.decodeFile(imgPath);
+        imgPath = intent.getStringExtra("camera_path");
+        bitmapSrc = BitmapFactory.decodeFile(imgPath);
 
-		initView();
-		pictureShow.setImageBitmap(bitmapSrc);
+        initView();
+        pictureShow.setImageBitmap(bitmapSrc);
 
-	}
+    }
 
-	private void initView()
-	{
-		cancelBtn = (ImageButton) findViewById(R.id.btn_cancel);
-		cancelBtn.setOnClickListener(this);
-		okBtn = (ImageButton) findViewById(R.id.btn_ok);
-		okBtn.setOnClickListener(this);
+    private void initView()
+    {
+        cancelBtn = (ImageButton) findViewById(R.id.btn_cancel);
+        cancelBtn.setOnClickListener(this);
+        okBtn = (ImageButton) findViewById(R.id.btn_ok);
+        okBtn.setOnClickListener(this);
 
-		pictureShow = (ImageView) findViewById(R.id.enhancePicture);
+        pictureShow = (ImageView) findViewById(R.id.enhancePicture);
 
-		saturationSeekBar = (SeekBar) findViewById(R.id.saturation);
-		saturationSeekBar.setMax(255);
-		saturationSeekBar.setProgress(128);
-		saturationSeekBar.setOnSeekBarChangeListener(this);
+        saturationSeekBar = (SeekBar) findViewById(R.id.saturation);
+        saturationSeekBar.setMax(255);
+        saturationSeekBar.setProgress(128);
+        saturationSeekBar.setOnSeekBarChangeListener(this);
 
-		brightnessSeekBar = (SeekBar) findViewById(R.id.brightness);
-		brightnessSeekBar.setMax(255);
-		brightnessSeekBar.setProgress(128);
-		brightnessSeekBar.setOnSeekBarChangeListener(this);
+        brightnessSeekBar = (SeekBar) findViewById(R.id.brightness);
+        brightnessSeekBar.setMax(255);
+        brightnessSeekBar.setProgress(128);
+        brightnessSeekBar.setOnSeekBarChangeListener(this);
 
-		contrastSeekBar = (SeekBar) findViewById(R.id.contrast);
-		contrastSeekBar.setMax(255);
-		contrastSeekBar.setProgress(128);
-		contrastSeekBar.setOnSeekBarChangeListener(this);
+        contrastSeekBar = (SeekBar) findViewById(R.id.contrast);
+        contrastSeekBar.setMax(255);
+        contrastSeekBar.setProgress(128);
+        contrastSeekBar.setOnSeekBarChangeListener(this);
 
-		pe = new PhotoEnhance(bitmapSrc);
+        pe = new PhotoEnhance(bitmapSrc);
 
-	}
+    }
 
-	private int pregress = 0;
-	private Bitmap bit = null;
+    private int pregress = 0;
+    private Bitmap bit = null;
 
-	@Override
-	public void onProgressChanged(SeekBar seekBar, int progress,
-			boolean fromUser)
-	{
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
+    {
 
-		pregress = progress;
-	}
+        pregress = progress;
+    }
 
-	@Override
-	public void onStartTrackingTouch(SeekBar seekBar)
-	{
-		// TODO Auto-generated method stub
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar)
+    {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	@Override
-	public void onStopTrackingTouch(SeekBar seekBar)
-	{
-		// TODO Auto-generated method stub
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar)
+    {
+        // TODO Auto-generated method stub
 
-		int type = 0;
+        int type = 0;
 
-		switch (seekBar.getId())
-		{
-			case R.id.saturation :
-				pe.setSaturation(pregress);
-				type = pe.Enhance_Saturation;
+        switch (seekBar.getId())
+        {
+        case R.id.saturation:
+            pe.setSaturation(pregress);
+            type = pe.Enhance_Saturation;
 
-				break;
-			case R.id.brightness :
-				pe.setBrightness(pregress);
-				type = pe.Enhance_Brightness;
+            break;
+        case R.id.brightness:
+            pe.setBrightness(pregress);
+            type = pe.Enhance_Brightness;
 
-				break;
+            break;
 
-			case R.id.contrast :
-				pe.setContrast(pregress);
-				type = pe.Enhance_Contrast;
+        case R.id.contrast:
+            pe.setContrast(pregress);
+            type = pe.Enhance_Contrast;
 
-				break;
+            break;
 
-			default :
-				break;
-		}
+        default:
+            break;
+        }
 
-		bit = pe.handleImage(type);
-		pictureShow.setImageBitmap(bit);
+        bit = pe.handleImage(type);
+        pictureShow.setImageBitmap(bit);
 
-	}
+    }
 
-	@Override
-	public void onClick(View view)
-	{
-		switch (view.getId())
-		{
+    @Override
+    public void onClick(View view)
+    {
+        switch (view.getId())
+        {
 
-			case R.id.btn_ok :
+        case R.id.btn_ok:
 
-				FileUtils.writeImage(bit, imgPath, 100);
-				Intent okData = new Intent();
-				okData.putExtra("camera_path", imgPath);
-				setResult(RESULT_OK, okData);
-				recycle();
-				this.finish();
-				break;
+            FileUtils.writeImage(bit, imgPath, 100);
+            Intent okData = new Intent();
+            okData.putExtra("camera_path", imgPath);
+            setResult(RESULT_OK, okData);
+            recycle();
+            this.finish();
+            break;
 
-			case R.id.btn_cancel :
+        case R.id.btn_cancel:
 
-				Intent cancelData = new Intent();
-				setResult(RESULT_CANCELED, cancelData);
-				recycle();
-				this.finish();
-				break;
+            Intent cancelData = new Intent();
+            setResult(RESULT_CANCELED, cancelData);
+            recycle();
+            this.finish();
+            break;
 
-			default :
-				break;
-		}
+        default:
+            break;
+        }
 
-	}
+    }
 
-	private void recycle()
-	{
-		if (bitmapSrc != null)
-		{
-			bitmapSrc.recycle();
-			bitmapSrc = null;
-		}
+    private void recycle()
+    {
+        if (bitmapSrc != null)
+        {
+            bitmapSrc.recycle();
+            bitmapSrc = null;
+        }
 
-		if (bit != null)
-		{
-			bit.recycle();
-			bit = null;
-		}
-	}
+        if (bit != null)
+        {
+            bit.recycle();
+            bit = null;
+        }
+    }
 
 }

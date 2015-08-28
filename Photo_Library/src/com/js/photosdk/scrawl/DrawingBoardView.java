@@ -20,398 +20,370 @@ import android.view.View;
 public class DrawingBoardView extends View
 {
 
-	/** 画板背景 **/
-	private Bitmap backgroundBitmap = null;
+    /**
+     * 画板背景
+     **/
+    private Bitmap backgroundBitmap = null;
 
-	/** 绘画图层 **/
-	private Bitmap paintBitmap = null;
+    /**
+     * 绘画图层
+     **/
+    private Bitmap paintBitmap = null;
 
-	/** 绘画板 **/
-	private Canvas paintCanvas = null;
+    /**
+     * 绘画板
+     **/
+    private Canvas paintCanvas = null;
 
-	/** 手势监听 **/
-	private GestureDetector brushGestureDetector = null;
-	private BrushGestureListener brushGestureListener = null;
+    /**
+     * 手势监听
+     **/
+    private GestureDetector brushGestureDetector = null;
+    private BrushGestureListener brushGestureListener = null;
 
-	/** 绘画类型 **/
-	private DrawAttribute.DrawStatus mDrawStatus;
-	
-	private int mBrushColor;
+    /**
+     * 绘画类型
+     **/
+    private DrawAttribute.DrawStatus mDrawStatus;
 
-	/** 上下文 **/
-	private Context context;
+    private int mBrushColor;
 
-	public DrawingBoardView(Context context, AttributeSet attributeSet)
-	{
-		super(context, attributeSet);
-		this.context = context;
-		brushGestureListener = new BrushGestureListener();
-		brushGestureDetector = new GestureDetector(context,
-				brushGestureListener);
+    /**
+     * 上下文
+     **/
+    private Context context;
 
-	}
+    public DrawingBoardView(Context context, AttributeSet attributeSet)
+    {
+        super(context, attributeSet);
+        this.context = context;
+        brushGestureListener = new BrushGestureListener();
+        brushGestureDetector = new GestureDetector(context, brushGestureListener);
 
-	@Override
-	protected void onDraw(Canvas canvas)
-	{
-		super.onDraw(canvas);
-		canvas.drawColor(Color.WHITE);
-		canvas.drawBitmap(backgroundBitmap, 0, 0, null);
-		canvas.drawBitmap(paintBitmap, 0, 0, null);
-	}
+    }
 
-	@Override
-	public boolean onTouchEvent(MotionEvent event)
-	{
-		brushGestureDetector.onTouchEvent(event);
-		postInvalidate();
-		return true;
-	}
+    @Override
+    protected void onDraw(Canvas canvas)
+    {
+        super.onDraw(canvas);
+        canvas.drawColor(Color.WHITE);
+        canvas.drawBitmap(backgroundBitmap, 0, 0, null);
+        canvas.drawBitmap(paintBitmap, 0, 0, null);
+    }
 
-	/**
-	 * 设置绘制的背景图片 创建绘画画板Canvas
-	 * 
-	 * @param bitmap
-	 *            背景图片
-	 * 
-	 */
-	public void setBackgroundBitmap(Bitmap bitmap)
-	{
+    @Override
+    public boolean onTouchEvent(MotionEvent event)
+    {
+        brushGestureDetector.onTouchEvent(event);
+        postInvalidate();
+        return true;
+    }
 
-		backgroundBitmap = bitmap;
-		paintBitmap = Bitmap.createBitmap(backgroundBitmap.getWidth(),
-				backgroundBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-		paintCanvas = new Canvas(paintBitmap);
+    /**
+     * 设置绘制的背景图片 创建绘画画板Canvas
+     *
+     * @param bitmap 背景图片
+     */
+    public void setBackgroundBitmap(Bitmap bitmap)
+    {
 
-	}
+        backgroundBitmap = bitmap;
+        paintBitmap = Bitmap.createBitmap(backgroundBitmap.getWidth(), backgroundBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        paintCanvas = new Canvas(paintBitmap);
 
-	
-	/**
-	 * 设置绘画类型
-	 * 
-	 * @param drawStatus
-	 * 
-	 * 绘画类型
-	 * 
-	 */
-	public void setDrawStatus(DrawAttribute.DrawStatus drawStatus)
-	{
-		this.mDrawStatus = drawStatus;
-	}
-	
-	/**
-	 * 设置画笔颜色
-	 * 
-	 * @param color
-	 * 
-	 * 画笔颜色
-	 * 
-	 */
-	public void setPaintColor(int color)
-	{
-		this.mBrushColor = color;
-	}
-	
-	
+    }
 
-	/**
-	 * 设置画笔
-	 * 
-	 * @param drawStatus
-	 *            绘画类型
-	 * 
-	 * @param brushBitmap
-	 *            画笔
-	 * 
-	 * @param brushColor
-	 *            画笔颜色
-	 * 
-	 */
-	public void setBrushBitmap(DrawAttribute.DrawStatus drawStatus,
-			Bitmap brushBitmap, int brushColor)
-	{
-		this.mDrawStatus = drawStatus;
-		this.mBrushColor = brushColor;
-		
-		Bitmap tempBrush = null;
-		int brushDistance = 0;
-		Paint brushPaint = null;
 
-		switch (mDrawStatus)
-		{
-			case PEN_WATER :
+    /**
+     * 设置绘画类型
+     *
+     * @param drawStatus 绘画类型
+     */
+    public void setDrawStatus(DrawAttribute.DrawStatus drawStatus)
+    {
+        this.mDrawStatus = drawStatus;
+    }
 
-				brushDistance = 1;
-				tempBrush = casualStroke(brushBitmap, brushColor);
-				brushPaint = null;
+    /**
+     * 设置画笔颜色
+     *
+     * @param color 画笔颜色
+     */
+    public void setPaintColor(int color)
+    {
+        this.mBrushColor = color;
+    }
 
-				break;
 
-			case PEN_CRAYON :
+    /**
+     * 设置画笔
+     *
+     * @param drawStatus  绘画类型
+     * @param brushBitmap 画笔
+     * @param brushColor  画笔颜色
+     */
+    public void setBrushBitmap(DrawAttribute.DrawStatus drawStatus, Bitmap brushBitmap, int brushColor)
+    {
+        this.mDrawStatus = drawStatus;
+        this.mBrushColor = brushColor;
 
-				brushDistance = brushBitmap.getWidth() / 2;
-				tempBrush = casualStroke(brushBitmap, brushColor);
-				brushPaint = null;
+        Bitmap tempBrush = null;
+        int brushDistance = 0;
+        Paint brushPaint = null;
 
-				break;
+        switch (mDrawStatus)
+        {
+        case PEN_WATER:
 
-			case PEN_COLOR_BIG :
-				tempBrush = casualStroke(brushBitmap, brushColor);
-				brushDistance = 2;
-				brushPaint = null;
+            brushDistance = 1;
+            tempBrush = casualStroke(brushBitmap, brushColor);
+            brushPaint = null;
 
-				break;
+            break;
 
-			case PEN_ERASER :
-				brushPaint = new Paint();
-				brushPaint.setFilterBitmap(true);
-				brushPaint.setXfermode(new PorterDuffXfermode(
-						PorterDuff.Mode.DST_OUT));
+        case PEN_CRAYON:
 
-				tempBrush = brushBitmap;
-				brushDistance = brushBitmap.getWidth() / 4;
+            brushDistance = brushBitmap.getWidth() / 2;
+            tempBrush = casualStroke(brushBitmap, brushColor);
+            brushPaint = null;
 
-				break;
+            break;
 
-			default :
-				break;
-		}
+        case PEN_COLOR_BIG:
+            tempBrush = casualStroke(brushBitmap, brushColor);
+            brushDistance = 2;
+            brushPaint = null;
 
-		brushGestureListener.setBrush(tempBrush, brushDistance, brushPaint);
-	}
+            break;
 
-	/**
-	 * 设置邮票数据
-	 * 
-	 * @param drawStatus
-	 *            绘画类型
-	 * 
-	 * @param res
-	 *            资源ID数组(大小为4)
-	 * 
-	 * @param color
-	 *            颜色
-	 * 
-	 */
-	public void setStampBitmaps(DrawAttribute.DrawStatus drawStatus, int[] res,
-			int color)
-	{
-		Bitmap[] brushBitmaps = new Bitmap[4];
-		brushBitmaps[0] = casualStroke(res[0], color);
-		brushBitmaps[1] = casualStroke(res[1], color);
-		brushBitmaps[2] = casualStroke(res[2], color);
-		brushBitmaps[3] = casualStroke(res[3], color);
+        case PEN_ERASER:
+            brushPaint = new Paint();
+            brushPaint.setFilterBitmap(true);
+            brushPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
 
-		brushGestureListener.setStampBrush(brushBitmaps);
-		this.mDrawStatus = drawStatus;
+            tempBrush = brushBitmap;
+            brushDistance = brushBitmap.getWidth() / 4;
 
-	}
+            break;
 
-	class BrushGestureListener extends GestureDetector.SimpleOnGestureListener
-	{
+        default:
+            break;
+        }
 
-		private Bitmap brushBitmap = null;
-		private int brushDistance;
+        brushGestureListener.setBrush(tempBrush, brushDistance, brushPaint);
+    }
 
-		/** 半个画刷宽度 **/
-		private int halfBrushBitmapWidth;
+    /**
+     * 设置邮票数据
+     *
+     * @param drawStatus 绘画类型
+     * @param res        资源ID数组(大小为4)
+     * @param color      颜色
+     */
+    public void setStampBitmaps(DrawAttribute.DrawStatus drawStatus, int[] res, int color)
+    {
+        Bitmap[] brushBitmaps = new Bitmap[4];
+        brushBitmaps[0] = casualStroke(res[0], color);
+        brushBitmaps[1] = casualStroke(res[1], color);
+        brushBitmaps[2] = casualStroke(res[2], color);
+        brushBitmaps[3] = casualStroke(res[3], color);
 
-		/** 画刷 **/
-		private Paint brushPaint = null;
+        brushGestureListener.setStampBrush(brushBitmaps);
+        this.mDrawStatus = drawStatus;
 
-		/** 邮票 **/
-		private Bitmap[] stampBrushBitmaps = null;
+    }
 
-		/** 是否是邮票 **/
-		private boolean isStamp = false;
+    class BrushGestureListener extends GestureDetector.SimpleOnGestureListener
+    {
 
-		public BrushGestureListener()
-		{
-			super();
-			isStamp = false;
-		}
+        private Bitmap brushBitmap = null;
+        private int brushDistance;
 
-		@Override
-		public boolean onDown(MotionEvent e)
-		{
+        /**
+         * 半个画刷宽度
+         **/
+        private int halfBrushBitmapWidth;
 
-			switch (mDrawStatus)
-			{
-				case PEN_WATER :
-				case PEN_CRAYON :
-				case PEN_COLOR_BIG :
-				case PEN_ERASER :
-				{
-					isStamp = false;
-					break;
-				}
-				case PEN_STAMP :
-				{
-					isStamp = true;
-					break;
-				}
-				default :
-					isStamp = false;
-					break;
-			}
+        /**
+         * 画刷
+         **/
+        private Paint brushPaint = null;
 
-			if (isStamp)
-			{
-				paintSingleStamp(e.getX(), e.getY());
-			} else
-			{
-				paintCanvas.drawBitmap(brushBitmap, e.getX()
-						- halfBrushBitmapWidth,
-						e.getY() - halfBrushBitmapWidth, brushPaint);
-			}
+        /**
+         * 邮票
+         **/
+        private Bitmap[] stampBrushBitmaps = null;
 
-			return true;
-		}
+        /**
+         * 是否是邮票
+         **/
+        private boolean isStamp = false;
 
-		@Override
-		public boolean onScroll(MotionEvent e1, MotionEvent e2,
-				float distanceX, float distanceY)
-		{
+        public BrushGestureListener()
+        {
+            super();
+            isStamp = false;
+        }
 
-			if (isStamp)
-			{
-				//paintSingleStamp(e2.getX(), e2.getY());
-			} else
-			{
-				float beginX = e2.getX();
-				float beginY = e2.getY();
-				float distance = (float) Math.sqrt(distanceX * distanceX
-						+ distanceY * distanceY);
-				float x = distanceX / distance, x_ = 0;
-				float y = distanceY / distance, y_ = 0;
-				while (Math.abs(x_) <= Math.abs(distanceX)
-						&& Math.abs(y_) <= Math.abs(distanceY))
-				{
-					x_ += x * brushDistance;
-					y_ += y * brushDistance;
-					paintCanvas.save();
-					paintCanvas.rotate((float) (Math.random() * 10000), beginX
-							+ x_, beginY + y_);
-					paintCanvas.drawBitmap(brushBitmap, beginX + x_
-							- halfBrushBitmapWidth, beginY + y_
-							- halfBrushBitmapWidth, brushPaint);
-					paintCanvas.restore();
-				}
-			}
+        @Override
+        public boolean onDown(MotionEvent e)
+        {
 
-			return true;
-		}
+            switch (mDrawStatus)
+            {
+            case PEN_WATER:
+            case PEN_CRAYON:
+            case PEN_COLOR_BIG:
+            case PEN_ERASER:
+            {
+                isStamp = false;
+                break;
+            }
+            case PEN_STAMP:
+            {
+                isStamp = true;
+                break;
+            }
+            default:
+                isStamp = false;
+                break;
+            }
 
-		public void setBrush(Bitmap brushBitmap, int brushDistance,
-				Paint brushPaint)
-		{
-			this.brushBitmap = brushBitmap;
-			this.brushDistance = brushDistance;
-			this.halfBrushBitmapWidth = brushBitmap.getWidth() / 2;
-			this.brushPaint = brushPaint;
-		}
+            if (isStamp)
+            {
+                paintSingleStamp(e.getX(), e.getY());
+            }
+            else
+            {
+                paintCanvas.drawBitmap(brushBitmap, e.getX() - halfBrushBitmapWidth, e.getY() - halfBrushBitmapWidth, brushPaint);
+            }
 
-		public void setStampBrush(Bitmap[] brushBitmaps)
-		{
-			this.stampBrushBitmaps = brushBitmaps;
-			halfBrushBitmapWidth = brushBitmaps[0].getWidth() / 2;
-		}
+            return true;
+        }
 
-		private void paintSingleStamp(float x, float y)
-		{
-			
-			if (Math.random() > 0.1)
-			{
-				paintCanvas.drawBitmap(stampBrushBitmaps[0], x
-						- halfBrushBitmapWidth, y - halfBrushBitmapWidth, null);
-			}
-			
-			for (int i = 1; i < stampBrushBitmaps.length; i++)
-			{
-				if (Math.random() > 0.3)
-				{
-					paintCanvas.drawBitmap(stampBrushBitmaps[i], x
-							- halfBrushBitmapWidth, y - halfBrushBitmapWidth,
-							null);
-				}
-			}
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
+        {
 
-		}
+            if (isStamp)
+            {
+                //paintSingleStamp(e2.getX(), e2.getY());
+            }
+            else
+            {
+                float beginX = e2.getX();
+                float beginY = e2.getY();
+                float distance = (float) Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+                float x = distanceX / distance, x_ = 0;
+                float y = distanceY / distance, y_ = 0;
+                while (Math.abs(x_) <= Math.abs(distanceX) && Math.abs(y_) <= Math.abs(distanceY))
+                {
+                    x_ += x * brushDistance;
+                    y_ += y * brushDistance;
+                    paintCanvas.save();
+                    paintCanvas.rotate((float) (Math.random() * 10000), beginX + x_, beginY + y_);
+                    paintCanvas.drawBitmap(brushBitmap, beginX + x_ - halfBrushBitmapWidth, beginY + y_ - halfBrushBitmapWidth, brushPaint);
+                    paintCanvas.restore();
+                }
+            }
 
-	}
-	
-	
-	
-	/**
-	 * 将图片涂色
-	 * 
-	 * @param mode
-	 *            画笔
-	 * 
-	 * @param color
-	 *            画笔颜色
-	 * 
-	 * @return 将画笔(图片)涂色
-	 * 
-	 */
-	private Bitmap casualStroke(Bitmap paintBit, int color)
-	{
-		Bitmap bitmap = paintBit.copy(Bitmap.Config.ARGB_8888, true);
-		Canvas canvas = new Canvas();
-		canvas.setBitmap(bitmap);
-		Paint paintUnder = new Paint();
-		paintUnder.setColor(color);
-		canvas.drawPaint(paintUnder);
-		Paint paint = new Paint();
-		paint.setFilterBitmap(true);
-		paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
-		canvas.drawBitmap(paintBit, 0, 0, paint);
-		paintBit.recycle();
-		return bitmap;
-	}
+            return true;
+        }
 
-	/**
-	 * 将图片涂色
-	 * 
-	 * @param drawableId
-	 *            图片
-	 * 
-	 * @param color
-	 *            颜色
-	 * 
-	 * @return
-	 */
-	private Bitmap casualStroke(int drawableId, int color)
-	{
-		Bitmap mode = ((BitmapDrawable) this.getResources().getDrawable(
-				drawableId)).getBitmap();
-		Bitmap bitmap = mode.copy(Bitmap.Config.ARGB_8888, true);
-		Canvas canvas = new Canvas();
-		canvas.setBitmap(bitmap);
-		Paint paintUnder = new Paint();
-		paintUnder.setColor(color);
-		canvas.drawPaint(paintUnder);
-		Paint paint = new Paint();
-		paint.setFilterBitmap(true);
-		paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
-		canvas.drawBitmap(mode, 0, 0, paint);
-		return bitmap;
-	}
-	
-	/**
-	 * 得到绘画图片
-	 * 
-	 * @return
-	 */
-	public Bitmap getDrawBitmap()
-	{
-		Bitmap bitmap = Bitmap.createBitmap(backgroundBitmap.getWidth(),
-				backgroundBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-		Canvas canvas = new Canvas(bitmap);
-		canvas.drawBitmap(backgroundBitmap, 0, 0, null);
-		canvas.drawBitmap(paintBitmap, 0, 0, null);
-		canvas.save();
+        public void setBrush(Bitmap brushBitmap, int brushDistance, Paint brushPaint)
+        {
+            this.brushBitmap = brushBitmap;
+            this.brushDistance = brushDistance;
+            this.halfBrushBitmapWidth = brushBitmap.getWidth() / 2;
+            this.brushPaint = brushPaint;
+        }
 
-		return bitmap;
-	}
+        public void setStampBrush(Bitmap[] brushBitmaps)
+        {
+            this.stampBrushBitmaps = brushBitmaps;
+            halfBrushBitmapWidth = brushBitmaps[0].getWidth() / 2;
+        }
+
+        private void paintSingleStamp(float x, float y)
+        {
+
+            if (Math.random() > 0.1)
+            {
+                paintCanvas.drawBitmap(stampBrushBitmaps[0], x - halfBrushBitmapWidth, y - halfBrushBitmapWidth, null);
+            }
+
+            for (int i = 1; i < stampBrushBitmaps.length; i++)
+            {
+                if (Math.random() > 0.3)
+                {
+                    paintCanvas.drawBitmap(stampBrushBitmaps[i], x - halfBrushBitmapWidth, y - halfBrushBitmapWidth, null);
+                }
+            }
+
+        }
+
+    }
+
+
+    /**
+     * 将图片涂色
+     *
+     * @param mode  画笔
+     * @param color 画笔颜色
+     * @return 将画笔(图片)涂色
+     */
+    private Bitmap casualStroke(Bitmap paintBit, int color)
+    {
+        Bitmap bitmap = paintBit.copy(Bitmap.Config.ARGB_8888, true);
+        Canvas canvas = new Canvas();
+        canvas.setBitmap(bitmap);
+        Paint paintUnder = new Paint();
+        paintUnder.setColor(color);
+        canvas.drawPaint(paintUnder);
+        Paint paint = new Paint();
+        paint.setFilterBitmap(true);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
+        canvas.drawBitmap(paintBit, 0, 0, paint);
+        paintBit.recycle();
+        return bitmap;
+    }
+
+    /**
+     * 将图片涂色
+     *
+     * @param drawableId 图片
+     * @param color      颜色
+     * @return
+     */
+    private Bitmap casualStroke(int drawableId, int color)
+    {
+        Bitmap mode = ((BitmapDrawable) this.getResources().getDrawable(drawableId)).getBitmap();
+        Bitmap bitmap = mode.copy(Bitmap.Config.ARGB_8888, true);
+        Canvas canvas = new Canvas();
+        canvas.setBitmap(bitmap);
+        Paint paintUnder = new Paint();
+        paintUnder.setColor(color);
+        canvas.drawPaint(paintUnder);
+        Paint paint = new Paint();
+        paint.setFilterBitmap(true);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
+        canvas.drawBitmap(mode, 0, 0, paint);
+        return bitmap;
+    }
+
+    /**
+     * 得到绘画图片
+     *
+     * @return
+     */
+    public Bitmap getDrawBitmap()
+    {
+        Bitmap bitmap = Bitmap.createBitmap(backgroundBitmap.getWidth(), backgroundBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawBitmap(backgroundBitmap, 0, 0, null);
+        canvas.drawBitmap(paintBitmap, 0, 0, null);
+        canvas.save();
+
+        return bitmap;
+    }
 }

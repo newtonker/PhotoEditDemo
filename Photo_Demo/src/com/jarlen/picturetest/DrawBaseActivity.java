@@ -27,221 +27,200 @@ import android.widget.Toast;
 public class DrawBaseActivity extends Activity implements OnClickListener
 {
 
-	private DrawingBoardView drawView;
+    private DrawingBoardView drawView;
 
-	ScrawlTools casualWaterUtil = null;
+    ScrawlTools casualWaterUtil = null;
 
-	private LinearLayout drawLayout;
+    private LinearLayout drawLayout;
 
-	String mPath;
+    String mPath;
 
-	private ImageButton cancelBtn, okBtn;
+    private ImageButton cancelBtn, okBtn;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		// initialDrawAttribute();
-		setContentView(R.layout.layout_draw);
+    @Override
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        // initialDrawAttribute();
+        setContentView(R.layout.layout_draw);
 
-		drawView = (DrawingBoardView) findViewById(R.id.drawView);
-		drawLayout = (LinearLayout) findViewById(R.id.drawLayout);
+        drawView = (DrawingBoardView) findViewById(R.id.drawView);
+        drawLayout = (LinearLayout) findViewById(R.id.drawLayout);
 
-		cancelBtn = (ImageButton) findViewById(R.id.btn_cancel);
-		cancelBtn.setOnClickListener(this);
+        cancelBtn = (ImageButton) findViewById(R.id.btn_cancel);
+        cancelBtn.setOnClickListener(this);
 
-		okBtn = (ImageButton) findViewById(R.id.btn_ok);
-		okBtn.setOnClickListener(this);
+        okBtn = (ImageButton) findViewById(R.id.btn_ok);
+        okBtn.setOnClickListener(this);
 
-		Intent intent = getIntent();
+        Intent intent = getIntent();
 
-		mPath = intent.getStringExtra("camera_path");
+        mPath = intent.getStringExtra("camera_path");
 
-		timer.schedule(task, 10, 1000);
+        timer.schedule(task, 10, 1000);
 
-	}
+    }
 
-	final Handler myHandler = new Handler()
-	{
-		@Override
-		public void handleMessage(Message msg)
-		{
-			if (msg.what == 1)
-			{
-				if (drawLayout.getWidth() != 0)
-				{
-					// Log.i("jarlen", drawLayout.getWidth() + "");
-					// Log.i("jarlen", drawLayout.getHeight() + "");
-					// 取消定时器
-					timer.cancel();
-					compressed();
-				}
-			}
-		}
-	};
+    final Handler myHandler = new Handler()
+    {
+        @Override
+        public void handleMessage(Message msg)
+        {
+            if (msg.what == 1)
+            {
+                if (drawLayout.getWidth() != 0)
+                {
+                    // Log.i("jarlen", drawLayout.getWidth() + "");
+                    // Log.i("jarlen", drawLayout.getHeight() + "");
+                    // 取消定时器
+                    timer.cancel();
+                    compressed();
+                }
+            }
+        }
+    };
 
-	Timer timer = new Timer();
-	TimerTask task = new TimerTask()
-	{
-		public void run()
-		{
-			Message message = new Message();
-			message.what = 1;
-			myHandler.sendMessage(message);
-		}
-	};
+    Timer timer = new Timer();
+    TimerTask task = new TimerTask()
+    {
+        public void run()
+        {
+            Message message = new Message();
+            message.what = 1;
+            myHandler.sendMessage(message);
+        }
+    };
 
-	private void compressed()
-	{
+    private void compressed()
+    {
 
-		OperateUtils operateUtils = new OperateUtils(this);
+        OperateUtils operateUtils = new OperateUtils(this);
 
-		// Bitmap bit = BitmapFactory.decodeResource(this.getResources(),
-		// R.drawable.river);
-		Bitmap bit = BitmapFactory.decodeFile(mPath);
+        // Bitmap bit = BitmapFactory.decodeResource(this.getResources(),
+        // R.drawable.river);
+        Bitmap bit = BitmapFactory.decodeFile(mPath);
 
-		Bitmap resizeBmp = operateUtils.compressionFiller(bit, drawLayout);
+        Bitmap resizeBmp = operateUtils.compressionFiller(bit, drawLayout);
 
-		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-				resizeBmp.getWidth(), resizeBmp.getHeight());
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(resizeBmp.getWidth(), resizeBmp.getHeight());
 
-		drawView.setLayoutParams(layoutParams);
+        drawView.setLayoutParams(layoutParams);
 
-		casualWaterUtil = new ScrawlTools(this, drawView, resizeBmp);
+        casualWaterUtil = new ScrawlTools(this, drawView, resizeBmp);
 
-		Bitmap paintBitmap = BitmapFactory.decodeResource(this.getResources(),
-				R.drawable.crayon);
+        Bitmap paintBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.crayon);
 
-		// int[] res = new int[]{
-		// R.drawable.stamp0star,R.drawable.stamp1star,R.drawable.stamp2star,R.drawable.stamp3star
-		// };
+        // int[] res = new int[]{
+        // R.drawable.stamp0star,R.drawable.stamp1star,R.drawable.stamp2star,R.drawable.stamp3star
+        // };
 
-		casualWaterUtil.creatDrawPainter(DrawAttribute.DrawStatus.PEN_WATER,
-				paintBitmap, 0xffadb8bd);
+        casualWaterUtil.creatDrawPainter(DrawAttribute.DrawStatus.PEN_WATER, paintBitmap, 0xffadb8bd);
 
-		// casualWaterUtil.creatStampPainter(DrawAttribute.DrawStatus.PEN_STAMP,res,0xff00ff00);
+        // casualWaterUtil.creatStampPainter(DrawAttribute.DrawStatus.PEN_STAMP,res,0xff00ff00);
 
-	}
+    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu)
-	{
-		// TODO Auto-generated method stub
-		menu.add(0, 1, 1, "画笔1");
-		menu.add(0, 2, 2, "画笔2");
-		menu.add(0, 3, 3, "画笔大小");
-		menu.add(0, 4, 4, "画笔颜色");
-		menu.add(0, 5, 5, "贴图");
-		menu.add(0, 6, 6, "橡皮擦");
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        // TODO Auto-generated method stub
+        menu.add(0, 1, 1, "画笔1");
+        menu.add(0, 2, 2, "画笔2");
+        menu.add(0, 3, 3, "画笔大小");
+        menu.add(0, 4, 4, "画笔颜色");
+        menu.add(0, 5, 5, "贴图");
+        menu.add(0, 6, 6, "橡皮擦");
 
-		return super.onCreateOptionsMenu(menu);
-	}
+        return super.onCreateOptionsMenu(menu);
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		// TODO Auto-generated method stub
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        // TODO Auto-generated method stub
 
-		switch (item.getItemId())
-		{
+        switch (item.getItemId())
+        {
 
-			case 1 :
-				Bitmap paintBitmap1 = BitmapFactory.decodeResource(
-						this.getResources(), R.drawable.marker);
-				casualWaterUtil.creatDrawPainter(
-						DrawAttribute.DrawStatus.PEN_WATER, paintBitmap1,
-						0xffadb8bd);
+        case 1:
+            Bitmap paintBitmap1 = BitmapFactory.decodeResource(this.getResources(), R.drawable.marker);
+            casualWaterUtil.creatDrawPainter(DrawAttribute.DrawStatus.PEN_WATER, paintBitmap1, 0xffadb8bd);
 
-				break;
-			case 2 :
+            break;
+        case 2:
 
-				Bitmap paintBitmap2 = BitmapFactory.decodeResource(
-						this.getResources(), R.drawable.crayon);
-				casualWaterUtil.creatDrawPainter(
-						DrawAttribute.DrawStatus.PEN_CRAYON, paintBitmap2,
-						0xffadb8bd);
-				break;
-			case 3 :
+            Bitmap paintBitmap2 = BitmapFactory.decodeResource(this.getResources(), R.drawable.crayon);
+            casualWaterUtil.creatDrawPainter(DrawAttribute.DrawStatus.PEN_CRAYON, paintBitmap2, 0xffadb8bd);
+            break;
+        case 3:
 
-				Options option = new Options();
-				option.inSampleSize = 2;
-				Bitmap paintBitmap3 = BitmapFactory.decodeResource(
-						this.getResources(), R.drawable.marker, option);
-				casualWaterUtil.creatDrawPainter(
-						DrawAttribute.DrawStatus.PEN_WATER, paintBitmap3,
-						0xffadb8bd);
-				break;
+            Options option = new Options();
+            option.inSampleSize = 2;
+            Bitmap paintBitmap3 = BitmapFactory.decodeResource(this.getResources(), R.drawable.marker, option);
+            casualWaterUtil.creatDrawPainter(DrawAttribute.DrawStatus.PEN_WATER, paintBitmap3, 0xffadb8bd);
+            break;
 
-			case 4 :
+        case 4:
 
-				Bitmap paintBitmap4 = BitmapFactory.decodeResource(
-						this.getResources(), R.drawable.marker);
-				casualWaterUtil.creatDrawPainter(
-						DrawAttribute.DrawStatus.PEN_WATER, paintBitmap4,
-						0xff002200);
-				break;
+            Bitmap paintBitmap4 = BitmapFactory.decodeResource(this.getResources(), R.drawable.marker);
+            casualWaterUtil.creatDrawPainter(DrawAttribute.DrawStatus.PEN_WATER, paintBitmap4, 0xff002200);
+            break;
 
-			case 5 :
+        case 5:
 
-				int[] res = new int[]{R.drawable.stamp0star,
-						R.drawable.stamp1star, R.drawable.stamp2star,
-						R.drawable.stamp3star};
+            int[] res = new int[]{R.drawable.stamp0star, R.drawable.stamp1star, R.drawable.stamp2star, R.drawable.stamp3star};
 
-				casualWaterUtil.creatStampPainter(
-						DrawAttribute.DrawStatus.PEN_STAMP, res, 0xff00ff00);
+            casualWaterUtil.creatStampPainter(DrawAttribute.DrawStatus.PEN_STAMP, res, 0xff00ff00);
 
-				break;
+            break;
 
-			case 6 :
-				Bitmap paintBitmap6 = BitmapFactory.decodeResource(
-						this.getResources(), R.drawable.eraser);
+        case 6:
+            Bitmap paintBitmap6 = BitmapFactory.decodeResource(this.getResources(), R.drawable.eraser);
 
-				casualWaterUtil.creatDrawPainter(
-						DrawAttribute.DrawStatus.PEN_ERASER, paintBitmap6,
-						0xffadb8bd);
-				break;
+            casualWaterUtil.creatDrawPainter(DrawAttribute.DrawStatus.PEN_ERASER, paintBitmap6, 0xffadb8bd);
+            break;
 
-			default :
-				break;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+        default:
+            break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-	@Override
-	public void onClick(View view)
-	{
-		switch (view.getId())
-		{
-			case R.id.btn_cancel :
-				Intent cancelData = new Intent();
-				setResult(RESULT_CANCELED, cancelData);
+    @Override
+    public void onClick(View view)
+    {
+        switch (view.getId())
+        {
+        case R.id.btn_cancel:
+            Intent cancelData = new Intent();
+            setResult(RESULT_CANCELED, cancelData);
 
-				this.finish();
+            this.finish();
 
-				break;
+            break;
 
-			case R.id.btn_ok :
+        case R.id.btn_ok:
 
-				Bitmap bit = casualWaterUtil.getBitmap();
+            Bitmap bit = casualWaterUtil.getBitmap();
 
-				FileUtils.writeImage(bit, mPath, 100);
+            FileUtils.writeImage(bit, mPath, 100);
 
-				Intent okData = new Intent();
-				okData.putExtra("camera_path", mPath);
-				setResult(RESULT_OK, okData);
+            Intent okData = new Intent();
+            okData.putExtra("camera_path", mPath);
+            setResult(RESULT_OK, okData);
 
-				this.finish();
+            this.finish();
 
-				break;
+            break;
 
-			default :
-				break;
-		}
+        default:
+            break;
+        }
 
-	}
+    }
 
-	private void recycle()
-	{
+    private void recycle()
+    {
 
-	}
+    }
 }

@@ -19,154 +19,156 @@ import android.widget.ImageButton;
 public class MosaicActivity extends Activity implements OnClickListener
 {
 
-	private DrawMosaicView mosaic;
+    private DrawMosaicView mosaic;
 
-	String mPath;
-	private int mWidth, mHeight;
+    String mPath;
+    private int mWidth, mHeight;
 
-	Bitmap srcBitmap = null;
+    Bitmap srcBitmap = null;
 
-	private ImageButton cancelBtn, okBtn;
-	@Override
-	protected void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.layout_mosaic);
+    private ImageButton cancelBtn, okBtn;
 
-		initView();
+    @Override
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.layout_mosaic);
 
-		Intent intent = getIntent();
-		mPath = intent.getStringExtra("camera_path");
-		mosaic.setMosaicBackgroundResource(mPath);
+        initView();
 
-		srcBitmap = BitmapFactory.decodeFile(mPath);
+        Intent intent = getIntent();
+        mPath = intent.getStringExtra("camera_path");
+        mosaic.setMosaicBackgroundResource(mPath);
 
-		mWidth = srcBitmap.getWidth();
-		mHeight = srcBitmap.getHeight();
-		Bitmap bit = MosaicUtil.getMosaic(srcBitmap);
+        srcBitmap = BitmapFactory.decodeFile(mPath);
 
-		mosaic.setMosaicResource(bit);
-		mosaic.setMosaicBrushWidth(10);
+        mWidth = srcBitmap.getWidth();
+        mHeight = srcBitmap.getHeight();
+        Bitmap bit = MosaicUtil.getMosaic(srcBitmap);
 
-	}
+        mosaic.setMosaicResource(bit);
+        mosaic.setMosaicBrushWidth(10);
 
-	private void initView()
-	{
-		mosaic = (DrawMosaicView) findViewById(R.id.mosaic);
+    }
 
-		cancelBtn = (ImageButton) findViewById(R.id.btn_cancel);
-		cancelBtn.setOnClickListener(this);
+    private void initView()
+    {
+        mosaic = (DrawMosaicView) findViewById(R.id.mosaic);
 
-		okBtn = (ImageButton) findViewById(R.id.btn_ok);
-		okBtn.setOnClickListener(this);
+        cancelBtn = (ImageButton) findViewById(R.id.btn_cancel);
+        cancelBtn.setOnClickListener(this);
 
-	}
+        okBtn = (ImageButton) findViewById(R.id.btn_ok);
+        okBtn.setOnClickListener(this);
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu)
-	{
+    }
 
-		menu.add(0, 1, 1, "花色").setIcon(R.drawable.flower);
-		menu.add(0, 2, 2, "马赛克");
-		menu.add(0, 3, 3, "毛玻璃");
-		menu.add(0, 4, 4, "大小");
-		menu.add(0, 5, 5, "橡皮");
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
 
-		return super.onCreateOptionsMenu(menu);
-	}
+        menu.add(0, 1, 1, "花色").setIcon(R.drawable.flower);
+        menu.add(0, 2, 2, "马赛克");
+        menu.add(0, 3, 3, "毛玻璃");
+        menu.add(0, 4, 4, "大小");
+        menu.add(0, 5, 5, "橡皮");
 
-	int size = 5;
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		switch (item.getItemId())
-		{
-			case 1 :
-				Bitmap bit = BitmapFactory.decodeResource(this.getResources(),
-						R.drawable.hi4);
-				bit = FileUtils.ResizeBitmap(bit, mWidth, mHeight);
-				mosaic.setMosaicResource(bit);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-				break;
+    int size = 5;
 
-			case 2 :
-				Bitmap bitmapMosaic = MosaicUtil.getMosaic(srcBitmap);
-				mosaic.setMosaicResource(bitmapMosaic);
-				break;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+        case 1:
+            Bitmap bit = BitmapFactory.decodeResource(this.getResources(), R.drawable.hi4);
+            bit = FileUtils.ResizeBitmap(bit, mWidth, mHeight);
+            mosaic.setMosaicResource(bit);
 
-			case 3 :
-				Bitmap bitmapBlur = MosaicUtil.getBlur(srcBitmap);
-				mosaic.setMosaicResource(bitmapBlur);
-				break;
+            break;
 
-			case 4 :
+        case 2:
+            Bitmap bitmapMosaic = MosaicUtil.getMosaic(srcBitmap);
+            mosaic.setMosaicResource(bitmapMosaic);
+            break;
 
-				if (size >= 30)
-				{
-					size = 5;
-				} else
-				{
-					size += 5;
-				}
-				mosaic.setMosaicBrushWidth(size);
-				break;
+        case 3:
+            Bitmap bitmapBlur = MosaicUtil.getBlur(srcBitmap);
+            mosaic.setMosaicResource(bitmapBlur);
+            break;
 
-			case 5 :
+        case 4:
 
-				mosaic.setMosaicType(MosaicType.ERASER);
-				break;
+            if (size >= 30)
+            {
+                size = 5;
+            }
+            else
+            {
+                size += 5;
+            }
+            mosaic.setMosaicBrushWidth(size);
+            break;
 
-			default :
-				break;
-		}
+        case 5:
 
-		return super.onOptionsItemSelected(item);
+            mosaic.setMosaicType(MosaicType.ERASER);
+            break;
 
-	}
+        default:
+            break;
+        }
 
-	@Override
-	public void onClick(View view)
-	{
+        return super.onOptionsItemSelected(item);
 
-		switch (view.getId())
-		{
-			case R.id.btn_cancel :
+    }
 
-				Intent cancelData = new Intent();
-				setResult(RESULT_CANCELED, cancelData);
+    @Override
+    public void onClick(View view)
+    {
 
-				recycle();
-				this.finish();
+        switch (view.getId())
+        {
+        case R.id.btn_cancel:
 
-				break;
+            Intent cancelData = new Intent();
+            setResult(RESULT_CANCELED, cancelData);
 
-			case R.id.btn_ok :
-				
-				Bitmap bit = mosaic.getMosaicBitmap();
-				
-				FileUtils.writeImage(bit, mPath, 100);
+            recycle();
+            this.finish();
 
-				Intent okData = new Intent();
-				okData.putExtra("camera_path", mPath);
-				setResult(RESULT_OK, okData);
-				recycle();
-				MosaicActivity.this.finish();
+            break;
 
-				break;
+        case R.id.btn_ok:
 
-			default :
-				break;
-		}
+            Bitmap bit = mosaic.getMosaicBitmap();
 
-	}
+            FileUtils.writeImage(bit, mPath, 100);
 
-	private void recycle()
-	{
-		if (srcBitmap != null)
-		{
-			srcBitmap.recycle();
-			srcBitmap = null;
-		}
-	}
+            Intent okData = new Intent();
+            okData.putExtra("camera_path", mPath);
+            setResult(RESULT_OK, okData);
+            recycle();
+            MosaicActivity.this.finish();
+
+            break;
+
+        default:
+            break;
+        }
+
+    }
+
+    private void recycle()
+    {
+        if (srcBitmap != null)
+        {
+            srcBitmap.recycle();
+            srcBitmap = null;
+        }
+    }
 
 }
