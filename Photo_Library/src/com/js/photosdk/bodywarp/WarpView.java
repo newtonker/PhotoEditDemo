@@ -13,152 +13,154 @@ import android.view.View;
 
 public class WarpView extends View
 {
-	private Bitmap mBmp;
-	private int[] image;
-	private int first = 0;
-	private int[] colorR;
-	private int[] colorG;
-	private int[] colorB;
-	private Bitmap newBmp;
-	private boolean fg = true;
-	private Context context;
+    private Bitmap mBmp;
+    private int[] image;
+    private int first = 0;
+    private int[] colorR;
+    private int[] colorG;
+    private int[] colorB;
+    private Bitmap newBmp;
+    private boolean fg = true;
+    private Context context;
 
-	private static final int DEFAULT_PAINT_FLAGS = Paint.FILTER_BITMAP_FLAG
-			| Paint.DITHER_FLAG;
-	Paint mPaint = new Paint(DEFAULT_PAINT_FLAGS);
+    private static final int DEFAULT_PAINT_FLAGS = Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG;
+    Paint mPaint = new Paint(DEFAULT_PAINT_FLAGS);
 
-	public static int HWPPQ = 110;
-	public static int MMQFJ = 120;
+    public static int HWPPQ = 110;
+    public static int MMQFJ = 120;
 
-	private BodyWarp warp = new BodyWarp();
+    private BodyWarp warp = new BodyWarp();
 
-	private int MODE = MMQFJ;
-	public WarpView(Context context)
-	{
-		super(context);
-	}
+    private int MODE = MMQFJ;
 
-	public WarpView(Context context, AttributeSet attrs)
-	{
-		super(context, attrs);
-		this.context = context;
-		dest = new RectF(0, 0, 0, 0);
-	}
+    public WarpView(Context context)
+    {
+        super(context);
+    }
 
-	@Override
-	protected void onDraw(Canvas canvas)
-	{
-		if (fg)
-		{
-			int viewWidht = getWidth();
-			int viewHeight = getHeight();
-			float scale1 = (float) width / (float) viewWidht;
-			float scale2 = (float) height / (float) viewHeight;
-			scale = scale1 > scale2 ? scale1 : scale2;
-			int xoffset = (viewWidht - (int) (width / scale)) / 2;
-			int yoffset = (viewHeight - (int) (height / scale)) / 2;
-			dest.set(xoffset, yoffset, (int) (width / scale) + xoffset,
-					(int) (height / scale) + yoffset);
+    public WarpView(Context context, AttributeSet attrs)
+    {
+        super(context, attrs);
+        this.context = context;
+        dest = new RectF(0, 0, 0, 0);
+    }
 
-			canvas.drawBitmap(mBmp, null, dest, mPaint);
+    @Override
+    protected void onDraw(Canvas canvas)
+    {
+        if (fg)
+        {
+            int viewWidht = getWidth();
+            int viewHeight = getHeight();
+            float scale1 = (float) width / (float) viewWidht;
+            float scale2 = (float) height / (float) viewHeight;
+            scale = scale1 > scale2 ? scale1 : scale2;
+            int xoffset = (viewWidht - (int) (width / scale)) / 2;
+            int yoffset = (viewHeight - (int) (height / scale)) / 2;
+            dest.set(xoffset, yoffset, (int) (width / scale) + xoffset, (int) (height / scale) + yoffset);
 
-		} else
-		{
-			canvas.drawBitmap(newBmp, null, dest, mPaint);
-		}
-	}
-	private double orig_x, orig_y;
-	private double mou_dx, mou_dy;
-	private double max_dist, max_dist_sq;
-	private int width;
-	private int height;
-	private int count = 0;
-	private double mou_dx_norm;
-	private double mou_dy_norm;
+            canvas.drawBitmap(mBmp, null, dest, mPaint);
 
-	private float scale;
-	private RectF dest;
-	private double move_x, move_y;
-	private int dist = (int) getResources().getDimension(R.dimen.max_dist);
-	private int line_height = (int) getResources().getDimension(
-			R.dimen.warp_line);
-	@Override
-	public boolean onTouchEvent(MotionEvent event)
-	{
+        }
+        else
+        {
+            canvas.drawBitmap(newBmp, null, dest, mPaint);
+        }
+    }
 
-		switch (event.getAction())
-		{
-			case MotionEvent.ACTION_DOWN :
-				orig_x = event.getX();
-				orig_y = event.getY();
-				orig_x = (orig_x - dest.left) * scale;
-				orig_y = (orig_y - dest.top) * scale;
+    private double orig_x, orig_y;
+    private double mou_dx, mou_dy;
+    private double max_dist, max_dist_sq;
+    private int width;
+    private int height;
+    private int count = 0;
+    private double mou_dx_norm;
+    private double mou_dy_norm;
 
-				break;
-			case MotionEvent.ACTION_MOVE :
-				max_dist = dist * scale;
-				if (event.getAction() != 1)
-				{
+    private float scale;
+    private RectF dest;
+    private double move_x, move_y;
+    private int dist = (int) getResources().getDimension(R.dimen.max_dist);
+    private int line_height = (int) getResources().getDimension(R.dimen.warp_line);
 
-					move_x = event.getX();
-					move_y = event.getY();
+    @Override
+    public boolean onTouchEvent(MotionEvent event)
+    {
 
-					move_x = (move_x - dest.left) * scale;
-					move_y = (move_y - dest.top) * scale;
+        switch (event.getAction())
+        {
+        case MotionEvent.ACTION_DOWN:
+            orig_x = event.getX();
+            orig_y = event.getY();
+            orig_x = (orig_x - dest.left) * scale;
+            orig_y = (orig_y - dest.top) * scale;
 
-					// if(m > 0){
-					// int i2 = m + -1;
-					// orig_x = (event.getHistoricalX(i2) - dest.left)*scale;
-					// orig_y = (event.getHistoricalY(i2) - dest.top)*scale;
-					// }
-					if (move_x >= 0 && move_y >= 0)
-					{
-						warp.warpPhotoFromC(image, height, width, max_dist,
-								orig_x, orig_y, move_x, move_y);
+            break;
+        case MotionEvent.ACTION_MOVE:
+            max_dist = dist * scale;
+            if (event.getAction() != 1)
+            {
 
-						first++;
+                move_x = event.getX();
+                move_y = event.getY();
 
-						newBmp.setPixels(image, 0, width, 0, 0, width, height);
-						fg = false;
-					}
-				}
-				orig_x = move_x;
-				orig_y = move_y;
+                move_x = (move_x - dest.left) * scale;
+                move_y = (move_y - dest.top) * scale;
 
-				break;
-			case MotionEvent.ACTION_UP :
-				break;
-		}
-		invalidate();
-		return true;
-	}
-	public void setWarpBitmap(Bitmap bmp)
-	{
-		fg = true;// 重置标志
-		first = 0;
-		mBmp = bmp;
-		width = bmp.getWidth();
-		height = bmp.getHeight();
+                // if(m > 0){
+                // int i2 = m + -1;
+                // orig_x = (event.getHistoricalX(i2) - dest.left)*scale;
+                // orig_y = (event.getHistoricalY(i2) - dest.top)*scale;
+                // }
+                if (move_x >= 0 && move_y >= 0)
+                {
+                    warp.warpPhotoFromC(image, height, width, max_dist, orig_x, orig_y, move_x, move_y);
 
-		newBmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-		image = new int[width * height];
+                    first++;
 
-		mBmp.getPixels(image, 0, width, 0, 0, width, height);
-		newBmp.setPixels(image, 0, width, 0, 0, width, height);
-	}
-	public void setMode(int mode)
-	{
-		this.MODE = mode;
-	}
+                    newBmp.setPixels(image, 0, width, 0, 0, width, height);
+                    fg = false;
+                }
+            }
+            orig_x = move_x;
+            orig_y = move_y;
 
-	/**
-	 * 返回处理好的图片
-	 * 
-	 * @return
-	 */
-	public Bitmap getWrapBitmap()
-	{
-		return newBmp;
-	}
+            break;
+        case MotionEvent.ACTION_UP:
+            break;
+        }
+        invalidate();
+        return true;
+    }
+
+    public void setWarpBitmap(Bitmap bmp)
+    {
+        fg = true;// 重置标志
+        first = 0;
+        mBmp = bmp;
+        width = bmp.getWidth();
+        height = bmp.getHeight();
+
+        newBmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+        image = new int[width * height];
+
+        mBmp.getPixels(image, 0, width, 0, 0, width, height);
+        newBmp.setPixels(image, 0, width, 0, 0, width, height);
+    }
+
+    public void setMode(int mode)
+    {
+        this.MODE = mode;
+    }
+
+    /**
+     * 返回处理好的图片
+     *
+     * @return
+     */
+    public Bitmap getWrapBitmap()
+    {
+        return newBmp;
+    }
 
 }

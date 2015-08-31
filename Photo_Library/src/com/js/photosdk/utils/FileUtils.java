@@ -99,7 +99,7 @@ public class FileUtils
         try
         {
             FileOutputStream out = new FileOutputStream(file);
-            bm.compress(Bitmap.CompressFormat.PNG, 100, out);
+            bm.compress(Bitmap.CompressFormat.JPEG, 100, out);
             out.flush();
             out.close();
         }

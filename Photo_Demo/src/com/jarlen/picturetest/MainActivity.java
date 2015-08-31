@@ -213,7 +213,7 @@ public class MainActivity extends Activity implements OnClickListener
         }
     };
 
-    // 将生成的图片保存到内存中
+    // 将生成的图片保存到SD卡中
     public String SaveBitmap(Bitmap bitmap, String name)
     {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED))
